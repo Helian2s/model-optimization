@@ -1,0 +1,121 @@
+project:
+  name: trtllm-optimization-benchmark
+  results_dir: results
+  artifacts_dir: artifacts
+  platform_policy: nvidia_first
+  execution_policy: local_first_gpu_on_ec2_only
+
+execution_policy:
+  default_location: local_cpu_workstation
+  ec2_only_when_gpu_required: true
+  stop_ec2_after_gpu_work: true
+  target_instance_id: i-0c769a18f50fd1fe6
+  target_instance_type: g6e.2xlarge
+  target_region: us-west-2
+  local_tasks:
+    - repository_editing
+    - prompt_generation
+    - config_generation
+    - aws_inventory
+    - result_parsing
+    - report_generation
+    - schema_checks
+    - lightweight_unit_tests
+  ec2_gpu_tasks:
+    - target_environment_capture
+    - huggingface_gpu_baseline
+    - tensorrt_llm_container_validation
+    - tensorrt_llm_engine_build
+    - tensorrt_llm_latency_benchmark
+    - tensorrt_llm_throughput_benchmark
+    - quantization_or_kv_cache_experiment
+    - nsight_systems_profiling
+  lifecycle:
+    start_instance_immediately_before:
+      - target_environment_capture
+      - huggingface_gpu_baseline
+      - tensorrt_llm_container_validation
+      - tensorrt_llm_engine_build
+      - tensorrt_llm_latency_benchmark
+      - tensorrt_llm_throughput_benchmark
+      - quantization_or_kv_cache_experiment
+      - nsight_systems_profiling
+    stop_instance_immediately_after_gpu_phase: true
+    stop_on_failure: true
+    never_leave_running_for_local_tasks: true
+    require_instance_initiated_shutdown_behavior: stop
+    require_in_instance_shutdown_guard: true
+    default_shutdown_guard_minutes: 240
+    max_shutdown_guard_minutes: 480
+    stop_strategy_order:
+      - in_instance_shutdown_now_via_ssm
+      - aws_ec2_stop_instances
+      - pre_scheduled_in_instance_shutdown_guard
+    verify_stopped_before_finishing_gpu_phase: true
+
+nvidia_first_policy:
+  use_ngc_images: true
+  preferred_runtime: tensorrt_llm
+  preferred_profiling_tool: nsight_systems
+  preferred_gpu_telemetry:
+    - nvidia-smi
+    - nvml
+  preferred_container_runtime:
+    - docker
+    - nvidia-container-toolkit
+  baseline_exception: Hugging Face Transformers is required only for baseline measurement.
+  excluded_platforms:
+    - aws-inferentia
+    - aws-trainium
+    - neuron
+    - sagemaker
+
+model:
+  primary: Qwen/Qwen3-1.7B
+  fallbacks:
+    - Qwen/Qwen2.5-1.5B-Instruct
+    - TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  trust_remote_code: true
+  precision_preference:
+    - bf16
+    - fp16
+
+aws:
+  account_profile_for_inventory: finetuning-local
+  region: us-west-2
+  recommended_instance_id: i-0c769a18f50fd1fe6
+  recommended_instance_type: g6e.2xlarge
+  recommended_availability_zone: us-west-2c
+  access_method: ssm-session-manager
+  notes: See reports/aws_infrastructure_assessment.md for full inventory and constraints.
+
+container:
+  image: nvcr.io/nvidia/tensorrt-llm/release:1.3.0rc19
+  linux_amd64_digest: sha256:0082fd4f9934326e46bc77c7eb1e14404b168f2c8fd830d926a2da5a092bac28
+  validated_repo_digest: nvcr.io/nvidia/tensorrt-llm/release@sha256:0082fd4f9934326e46bc77c7eb1e14404b168f2c8fd830d926a2da5a092bac28
+  source: Pulled and validated from NVIDIA NGC on EC2 2026-06-29.
+
+benchmark:
+  warmup_requests: 5
+  quick_measured_requests: 20
+  full_measured_requests: 100
+  synthetic_datasets:
+    - name: isl128_osl128
+      input_len: 128
+      output_len: 128
+    - name: isl512_osl128
+      input_len: 512
+      output_len: 128
+    - name: isl1024_osl128
+      input_len: 1024
+      output_len: 128
+    - name: isl2048_osl256
+      input_len: 2048
+      output_len: 256
+
+optimization_experiment_order:
+  - fp8_kv_cache
+  - fp8_weight_activation
+  - int8
+  - int4_awq_or_gptq
+  - documented_kv_cache_runtime_fallback

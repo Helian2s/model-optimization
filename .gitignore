@@ -216,3 +216,44 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-local virtual environment and generated benchmark outputs
+.venv/
+artifacts/
+results/*
+!results/.gitkeep
+!results/summary.csv
+!results/summary.json
+reports/*
+!reports/.gitkeep
+!reports/aws_infrastructure_assessment.md
+!reports/final_implementation_plan.md
+!reports/local_implementation_progress.md
+!reports/ec2_gpu_validation_report.md
+!reports/codex_session_history.md
+!reports/first_gpu_benchmark_run.md
+!reports/prompt_set_run_20260629T035306Z.md
+!reports/remaining_gpu_run_20260629T043847Z.md
+!reports/final_report.md
+!reports/repository_packaging_checklist.md
+!reports/quantization_followup_engineer_log_*.md
+!reports/quantization_followup_*.md
+!results/quantization_followup_summary_*.json
+
+# Large benchmark artifacts should stay local or in S3, not git
+*.nsys-rep
+*.qdrep
+*_iterations.jsonl
+trtllm_*.log
+
+# Local model/container/cache material
+.cache/
+hf_cache/
+model_cache/
+ngc_cache/
+
+# Secrets and credentials
+*.pem
+*.key
+*.token
+*.env

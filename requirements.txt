@@ -1,0 +1,16 @@
+# Host-side Python dependencies for orchestration, parsing, and Hugging Face baseline scripts.
+# TensorRT-LLM is expected to run inside the official NVIDIA NGC container.
+
+accelerate
+boto3
+huggingface-hub
+numpy
+pandas
+psutil
+pydantic
+pynvml
+pyyaml
+sentencepiece
+torch
+tqdm
+transformers

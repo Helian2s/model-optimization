@@ -1,0 +1,38 @@
+{
+  "run_id": "quant_probe_temp_20260629T232604Z",
+  "status": "completed",
+  "temporary_instance_id": "i-05900920ee0c9d687",
+  "temporary_instance_final_state": "terminated",
+  "instance_type": "g6e.2xlarge",
+  "availability_zone": "us-west-2b",
+  "model": "Qwen/Qwen3-1.7B",
+  "model_snapshot_path": "/mnt/workspace/huggingface-cache/models--Qwen--Qwen3-1.7B/snapshots/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "container_image": "nvcr.io/nvidia/tensorrt-llm/release:1.2.1",
+  "container_digest": "nvcr.io/nvidia/tensorrt-llm/release@sha256:33cd085b772947bd22b7273886539331420404e5d2a4a039945241945ff927b9",
+  "package_versions": {
+    "tensorrt_llm": "1.2.1",
+    "tensorrt": "10.14.1.48",
+    "modelopt": "0.37.0",
+    "torch": "2.10.0a0+b4e4ee81d3.nv25.12",
+    "transformers": "4.57.3"
+  },
+  "findings": {
+    "trtllm_build_mentions_fp8": true,
+    "trtllm_build_mentions_int8": true,
+    "trtllm_build_mentions_int4": true,
+    "trtllm_build_mentions_awq": false,
+    "trtllm_build_mentions_gptq": false,
+    "bench_has_direct_quantization_flags": false,
+    "kv_cache_fraction_flag": "--kv_cache_free_gpu_mem_fraction",
+    "kv_cache_config_fp8_constructor_available": true,
+    "fp8_kv_smoke_success": false,
+    "fp8_kv_smoke_error_summary": "FMHA kernels are not found with these parameters",
+    "awq_gptq_examples_present": true,
+    "modelopt_transformers_warning_seen": true
+  },
+  "artifact_paths": {
+    "local_probe_json": "results/quant_probe_temp_20260629T232604Z_s3/results/quant_probe_temp_20260629T232604Z/quantization_probe.json",
+    "local_probe_markdown": "results/quant_probe_temp_20260629T232604Z_s3/reports/quant_probe_temp_20260629T232604Z/quantization_probe_summary.md",
+    "s3_prefix": "s3://finetuning-lab-1-037678282394-us-west-2-an/finetuning/results/trtllm-benchmark/quant_probe_temp_20260629T232604Z"
+  }
+}
